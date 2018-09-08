@@ -18,13 +18,16 @@
         </activity>
         <activity
             android:name=".EditorActivity"
-            android:label="@string/editor_add_a_book"
             android:parentActivityName=".CatalogActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CatalogActivity" />
         </activity>
+        <provider
+            android:authorities="com.example.pegmeister.minibookstore"
+            android:name=".data.BookProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

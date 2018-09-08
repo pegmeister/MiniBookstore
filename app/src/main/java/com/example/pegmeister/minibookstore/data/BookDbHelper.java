@@ -43,20 +43,17 @@ public class BookDbHelper extends SQLiteOpenHelper {
                 + BookEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + BookEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL, "
                 + BookEntry.COLUMN_PRICE + " REAL NOT NULL,"
-                + BookEntry.COLUMN_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
+                + BookEntry.COLUMN_QUANTITY + " INTEGER NOT NULL, "
                 + BookEntry.COLUMN_SUPPLIER + " TEXT NOT NULL,"
-                + BookEntry.COLUMN_SUPPLIER_PHONE + " TEXT);";
+                + BookEntry.COLUMN_SUPPLIER_PHONE + " VARCHAR(10) NOT NULL);";
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_BOOKS_TABLE);
 
     }
-
+    /** Tis is called when the database needs to be upgraded */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        /* Do the update next (skip for now)
-        if(oldVersion < 2){
-    }
-    */
+        // The database is still at version 1, so there is nothing to be done now
     }
 }
