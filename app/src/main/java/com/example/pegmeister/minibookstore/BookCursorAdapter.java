@@ -65,7 +65,7 @@ public class BookCursorAdapter extends CursorAdapter {
         nameTextView.setText(productName);
         DecimalFormat bkp = new DecimalFormat("#.00");
         priceTextView.setText("Price: $" + bkp.format(productPrice).toString());
-        quantityTextView.setText("Quantity: " + String.valueOf(productQuantity));
+        quantityTextView.setText(Integer.toString(productQuantity));
 
        final Button saleButton = view.findViewById(R.id.sale);
 

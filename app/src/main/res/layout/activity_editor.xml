@@ -73,15 +73,33 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+            android:paddingRight="0dp">
+
+            <Button
+                android:id="@+id/decrement"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:text="@string/minus"
+                android:textSize="24sp"
+                android:textColor="@color/colorAccent"/>
 
             <EditText
                 android:id="@+id/add_quantity"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/quantity"
-                android:inputType="textCapWords" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/zero"
+                android:textSize="18sp"
+                android:inputType="number"/>
+
+            <Button
+                android:id="@+id/increment"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:text="@string/plus"
+                android:textColor="@color/colorAccent"
+                android:textSize="24sp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -137,5 +155,14 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/contact_supplier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:text="@string/contact_supplier"
+        android:textColor="@color/colorPrimary" />
 
 </LinearLayout>

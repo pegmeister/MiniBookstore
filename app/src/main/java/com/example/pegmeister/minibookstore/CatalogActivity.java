@@ -9,10 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-
-
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,12 +66,12 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Setup the item click listener
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // create a new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
 
                 // Form the content URI that represents the specific book that was clicked on, by
-                // appending the IDonto the {@link BookEntry#CONTENT_URI)
+                // appending the ID onto the {@link BookEntry#CONTENT_URI)
                 Uri currentBookUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
 
                 // set the URI on the data field of the intent
@@ -88,7 +85,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Kick off the loader
         getLoaderManager().initLoader(BOOK_LOADER, null, this);
     }
-
 
     /**
      * Helper method to insert hardcoded bood data into the database. For debugging purposes only

@@ -1,8 +1,10 @@
 package com.example.pegmeister.minibookstore;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -10,8 +12,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -39,9 +44,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /* Boolean flag that keeps track of whether the book has been edited (true) or not (false) */
     private boolean bookHasChanged = false;
 
-    private Button decrement;
-    private Button increment;
-    private Button contactSupplier;
+    String supplierNumber;
+    EditText numberText;
+
+    /**
+     * OnTouchListener that listens for any user touches on a View, implying that they are
+     * modifying the view, and we change the bookHasChange boolean to true.
+     */
+
+    private View.OnTouchListener touchListener = new View.OnTouchListener(){
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent){
+            bookHasChanged = true;
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +68,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Examine the intent that was unused to launch this activity, in order to figure out
         // if we're creating a new book or editing an existing book.
         Intent intent = getIntent();
-        Uri mCurrentBookUri = intent.getData();
+        mCurrentBookUri = intent.getData();
 
         // if the intent DOES NOT contain a book content URI, then it is creating a new book
         if (mCurrentBookUri == null) {
@@ -59,6 +76,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             setTitle(getString(R.string.editor_add_a_book));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
+            // (It doesn't make sense to delete a book that hasn't been created yet.
             invalidateOptionsMenu();
         } else {
             // Otherwise this is an existing book, so change app to say "Edit Book"
@@ -75,6 +93,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         quantityEditText = findViewById(R.id.add_quantity);
         supplierEditText = findViewById(R.id.add_supplier);
         supplierPhoneEditText = findViewById(R.id.add_supplier_phone);
+
+        // Setup On TouchListener on all the input fields, so we can determine if the user has touched
+        // or modified them. This will let us know if there are unsaved changes or not, if the user
+        // tries to leave the editor without saving
+        nameEditText.setOnTouchListener(touchListener);
+        priceEditText.setOnTouchListener(touchListener);
+        quantityEditText.setOnTouchListener(touchListener);
+        supplierEditText.setOnTouchListener(touchListener);
+        supplierPhoneEditText.setOnTouchListener(touchListener);
     }
 
     /**
@@ -89,6 +116,29 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String supplierString = supplierEditText.getText().toString().trim();
         String phoneString = supplierPhoneEditText.getText().toString().trim();
 
+        // Check if this is supposed to be a new book entry and check if all fields in the editor are blank
+        if (mCurrentBookUri == null &&
+                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(supplierString) || TextUtils.isEmpty(phoneString)){
+            Toast.makeText(this,getString(R.string.not_save_msg),
+                    Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(nameString)){
+                Toast.makeText(this, getString(R.string.enter_name_req),
+                        Toast.LENGTH_SHORT).show();}
+                if (TextUtils.isEmpty(priceString)){
+                    Toast.makeText(this, getString(R.string.enter_price_req),
+                            Toast.LENGTH_SHORT).show();}
+                    if (TextUtils.isEmpty(supplierString)){
+                        Toast.makeText(this,getString(R.string.enter_supplier_req),
+                                Toast.LENGTH_SHORT).show();}
+                        if (TextUtils.isEmpty(phoneString)){
+                            Toast.makeText(this, getString(R.string.enter_phone_req),
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        return;
+                    }
+                    
         // Create a ContentValues object where column names are the keys and product attributes from
         // the editor are the values; then save them in a ContentValues object
         ContentValues values = new ContentValues();
@@ -142,6 +192,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
+    /**
+     * This method is called after invalidateOptionsMenu(), so that the
+     * menu can be updated (some Menu items can be hidden or made visible).
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        super.onPrepareOptionsMenu(menu);
+        // If this is a new book, hid the "Delete" menu item.
+        if (mCurrentBookUri == null){
+            MenuItem menuItem = menu.findItem(R.id.action_delete);
+            menuItem.setVisible(false);
+        }
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on an menu option in the app bar overflow menu
@@ -155,15 +220,60 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
-                // Do nothing for now
+                // Pop up confirmation dialog for deletion
+                showDeleteConfirmationDialog();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // Navigate back to parent activity (CatalogActivity)
-                NavUtils.navigateUpFromSameTask(this);
+                // If the book hasn't changed, continue with navigating up to parent activity
+                // which is the {@link CatalogActivity}
+                if (!bookHasChanged){
+                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                return true;
+        }
+
+        // Otherwise if there are unsaved changes, setup a dialog to warn user.
+        // Create a click listener to handle the user confirming that changes should be discarded.
+                DialogInterface.OnClickListener discardButtonClickListener =
+                new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i){
+                    // User clicked "Discard" button, navigate to parent activity.
+                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                }
+                };
+
+                // Show a dialog that notifies the user they have unsaved changes
+                showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method is called when the back button is pressed.
+     */
+    @Override
+    public void onBackPressed(){
+        // If the book hasn't changed, continue with handling back button press
+        if(!bookHasChanged){
+            super.onBackPressed();
+            return;
+        }
+
+        // Otherwise if there are unsaved changes, setup a dialog to warn user.
+        // Create a click listener to handle the user confirming that changes should be discarded
+        DialogInterface.OnClickListener discardButtonClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // User clicked "Discard" button, close the current activity.
+                        finish();
+                    }
+                };
+
+        // Show dialog that there were unsaved changes
+        showUnsavedChangesDialog(discardButtonClickListener);
     }
 
     @Override
@@ -190,12 +300,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Bail early if the cursor is null or there is less than 1 row in the cursor.
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null || cursor.getCount() < 1) {
             return;
         }
 
         // Proceed with moving to the first row of the cursor and reading data from it.
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             // Find the columns of book attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRICE);
@@ -217,6 +327,51 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             supplierEditText.setText(supplier);
             supplierPhoneEditText.setText(supplierPhone);
         }
+
+        // Decrement button setup
+        Button decrement = findViewById(R.id.decrement);
+
+        // decrease quantity when user clicks the button
+        decrement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int quantity = Integer.valueOf(quantityEditText.getText().toString());
+
+                if (quantity >= 1) {
+                    quantity = quantity - 1;
+                }
+                quantityEditText.setText(Integer.toString(quantity));
+            }
+        });
+
+        // Increment button setup
+        Button increment = findViewById(R.id.increment);
+
+        // increase quantity when user clicks the button
+        increment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity = Integer.valueOf(quantityEditText.getText().toString());
+
+                if (quantity >=0){
+                    quantity = quantity + 1;
+                }
+                quantityEditText.setText(Integer.toString(quantity));
+            }
+        });
+
+        // setup intent to ACTION_DIAL when user press "CONTACT SUPPLIER" button
+        Button contactButton = findViewById(R.id.contact_supplier);
+        numberText = findViewById(R.id.add_supplier_phone);
+        contactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                supplierNumber = numberText.getText().toString();
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel: "+ supplierNumber));
+                startActivity(callIntent);
+            }
+        });
     }
 
     @Override
@@ -230,17 +385,78 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     /**
+     * Show a dialog that warns the user there are unsaved changes that will be lost
+     * if they continue leaving the editor.
+     *
+     * @param discardButtonClickListener is the click listener for what to do when
+     *                                   the user confirms they want to discard their changes
+     */
+    private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.unsaved_changes_dialog_msg);
+        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Keep editing" button, so dismiss the dialog
+                // and continue editing the book.
+                if (dialog != null){
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    /**
+     * Prompt the user to confirm that they want to delete this book.
+     */
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners for the
+        // positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User click the "Delete" button, so delete the book.
+                deleteBook();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog and continue editing
+                if (dialog !=null){
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    /**
      * Perform the deletion of the book in the database
      */
     private void deleteBook(){
+        // Only perform the delete if this is an existing book.
         if (mCurrentBookUri != null){
+            // Call the ContentResolver to delete the book at the given content URI
+            // Pass in null for the selection and selection args because the mCurrentBookUri
+            // content URI already identifies the book that we want
             int rowsDeleted = getContentResolver().delete(mCurrentBookUri,null, null);
+
             // show a toast message depending on whether or not the deletion was successful
             if (rowsDeleted == 0){
                 Toast.makeText(this,getString(R.string.editor_delete_book_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, deletion was successful and we can display a message
+                // Otherwise, deletion was successful and we can display a toast.
                 Toast.makeText(this,getString(R.string.editor_update_book_successful),
                         Toast.LENGTH_SHORT).show();
             }
