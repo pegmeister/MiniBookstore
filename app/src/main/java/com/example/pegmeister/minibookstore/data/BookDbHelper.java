@@ -51,7 +51,10 @@ public class BookDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_BOOKS_TABLE);
 
     }
-    /** Tis is called when the database needs to be upgraded */
+
+    /**
+     * This is called when the database needs to be upgraded
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // The database is still at version 1, so there is nothing to be done now

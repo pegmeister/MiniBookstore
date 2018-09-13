@@ -94,6 +94,51 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         supplierEditText = findViewById(R.id.add_supplier);
         supplierPhoneEditText = findViewById(R.id.add_supplier_phone);
 
+        // Decrement button setup
+        Button decrement = findViewById(R.id.decrement);
+
+        // decrease quantity when user clicks the button
+        decrement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int quantity = Integer.valueOf(quantityEditText.getText().toString());
+
+                if (quantity >= 1) {
+                    quantity = quantity - 1;
+                }
+                quantityEditText.setText(Integer.toString(quantity));
+            }
+        });
+
+        // Increment button setup
+        Button increment = findViewById(R.id.increment);
+
+        // increase quantity when user clicks the button
+        increment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity = Integer.valueOf(quantityEditText.getText().toString());
+
+                if (quantity >=0){
+                    quantity = quantity + 1;
+                }
+                quantityEditText.setText(Integer.toString(quantity));
+            }
+        });
+
+        // setup intent to ACTION_DIAL when user press "CONTACT SUPPLIER" button
+        Button contactButton = findViewById(R.id.contact_supplier);
+        numberText = findViewById(R.id.add_supplier_phone);
+        contactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                supplierNumber = numberText.getText().toString();
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel: "+ supplierNumber));
+                startActivity(callIntent);
+            }
+        });
+
         // Setup On TouchListener on all the input fields, so we can determine if the user has touched
         // or modified them. This will let us know if there are unsaved changes or not, if the user
         // tries to leave the editor without saving
@@ -117,7 +162,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String phoneString = supplierPhoneEditText.getText().toString().trim();
 
         // Check if this is supposed to be a new book entry and check if all fields in the editor are blank
-        if (mCurrentBookUri == null &&
+        /**if (mCurrentBookUri == null &&
                 TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
                 TextUtils.isEmpty(supplierString) || TextUtils.isEmpty(phoneString)){
             Toast.makeText(this,getString(R.string.not_save_msg),
@@ -137,7 +182,26 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                             return;
                         }
                         return;
-                    }
+                    }*/
+        /**if (mCurrentBookUri == null){
+            Toast.makeText(this,getString(R.string.not_save_msg), Toast.LENGTH_SHORT).show();
+        }*/
+            if(TextUtils.isEmpty(nameString)){
+            Toast.makeText(this,getString(R.string.enter_name_req), Toast.LENGTH_SHORT).show();
+            return;
+            }
+            if (TextUtils.isEmpty(priceString)){
+            Toast.makeText(this,getString(R.string.enter_price_req), Toast.LENGTH_SHORT).show();
+            return;
+            }
+            if (TextUtils.isEmpty(supplierString)){
+            Toast.makeText(this,getString(R.string.enter_supplier_req), Toast.LENGTH_SHORT).show();
+            return;
+            }
+            if (TextUtils.isEmpty(phoneString)){
+            Toast.makeText(this,getString(R.string.enter_phone_req), Toast.LENGTH_SHORT).show();
+            return;
+            }
                     
         // Create a ContentValues object where column names are the keys and product attributes from
         // the editor are the values; then save them in a ContentValues object
@@ -328,50 +392,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             supplierPhoneEditText.setText(supplierPhone);
         }
 
-        // Decrement button setup
-        Button decrement = findViewById(R.id.decrement);
 
-        // decrease quantity when user clicks the button
-        decrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int quantity = Integer.valueOf(quantityEditText.getText().toString());
-
-                if (quantity >= 1) {
-                    quantity = quantity - 1;
-                }
-                quantityEditText.setText(Integer.toString(quantity));
-            }
-        });
-
-        // Increment button setup
-        Button increment = findViewById(R.id.increment);
-
-        // increase quantity when user clicks the button
-        increment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int quantity = Integer.valueOf(quantityEditText.getText().toString());
-
-                if (quantity >=0){
-                    quantity = quantity + 1;
-                }
-                quantityEditText.setText(Integer.toString(quantity));
-            }
-        });
-
-        // setup intent to ACTION_DIAL when user press "CONTACT SUPPLIER" button
-        Button contactButton = findViewById(R.id.contact_supplier);
-        numberText = findViewById(R.id.add_supplier_phone);
-        contactButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                supplierNumber = numberText.getText().toString();
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel: "+ supplierNumber));
-                startActivity(callIntent);
-            }
-        });
     }
 
     @Override

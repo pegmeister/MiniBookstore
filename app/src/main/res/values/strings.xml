@@ -1,13 +1,16 @@
 <resources>
     <string name="app_name">Mini Bookstore</string>
-    <string name="restock_product">Restock a product</string>
-    <string name="delete_all_entries">Delete all entries</string>
+
     <string name="editor_add_a_book">Add a Book</string>
     <string name="editor_edit_a_book">Edit Book</string>
     <string name="editor_update_book_successful">Book updated</string>
     <string name="editor_update_book_failed">Error with updating book</string>
     <string name="editor_delete_book_failed">Error with deleting book</string>
     <string name="editor_delete_book_successful">Book deleted</string>
+    <string name="editor_insert_book_successful">Book saved</string>
+    <string name="editor_insert_book_failed">Error with saving book</string>
+
+    <string name="delete_all_entries">Delete all entries</string>
     <string name="delete_dialog_msg">Delete this book?</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
@@ -23,22 +26,28 @@
     <string name="zero">0</string>
     <string name="contact_supplier">CONTACT SUPPLIER</string>
 
-    <string name="editor_insert_book_successful">Book saved</string>
-    <string name="editor_insert_book_failed">Error with saving book</string>
     <string name="sale">SALE</string>
     <string name="book_sale_failed">Product is currently unavailable, please restock.</string>
     <string name="book_sale_successful">Sold.</string>
-    <string name="empty_view_title_text">I have nothing to read...</string>
-    <string name="empty_view_subtitle_text">Give me a book now!</string>
+    <string name="empty_view_title_text">I have nothing to read.</string>
+    <string name="empty_view_subtitle_text">Pass me a book now!</string>
+    <string name="empty_shelf_image">Empty bookshelf</string>
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep Editing</string>
 
-    <string name="not_save_msg">Item not saved. Name, Price, Supplier and Phone number required.</string>
-    <string name="enter_name_req">Name required</string>
-    <string name="enter_price_req">Price required</string>
-    <string name="enter_supplier_req">Supplier Name required</string>
-    <string name="enter_phone_req">Supplier phone number required</string>
+    <string name="not_save_msg">Book/Changes not saved. Please populate all required fields.</string>
+    <string name="enter_name_req">Entries not saved, please enter Name.</string>
+    <string name="enter_price_req">Entries not saved, please enter Price.</string>
+    <string name="enter_supplier_req">Entries not saved, please enter Supplier Name.</string>
+    <string name="enter_phone_req">Entries not saved, please enter Supplier phone number.</string>
 
+    <string name="restock_product">Restock a product</string>
+    <string name="restock_book_name">Java For Dummies</string>
+    <string name="restock_book_price">19.99</string>
+    <string name="restock_book_quantity">20</string>
+    <string name="restock_book_supplier">Barnes and Nobles</string>
+    <string name="restock_book_phone">8001234567</string>
+    <string name="restock_book_failed">Restock failed</string>
 
 </resources>

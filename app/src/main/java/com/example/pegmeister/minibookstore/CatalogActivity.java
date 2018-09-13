@@ -1,6 +1,5 @@
 package com.example.pegmeister.minibookstore;
 
-
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -24,8 +23,7 @@ import com.example.pegmeister.minibookstore.data.BookContract.BookEntry;
 /**
  * Displays list of products that were entered and stored in the app.
  */
-
-public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Identifier for the book data loader
@@ -81,7 +79,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 startActivity(intent);
             }
         });
-
         // Kick off the loader
         getLoaderManager().initLoader(BOOK_LOADER, null, this);
     }
@@ -90,16 +87,15 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
      * Helper method to insert hardcoded bood data into the database. For debugging purposes only
      */
     private void insertBook() {
-        // create a ContentValue object where column names are the keys, and Java for Dummies's
-        // attributes are the values.
+        // Restock populate item
         ContentValues values = new ContentValues();
-        values.put(BookEntry.COLUMN_PRODUCT_NAME, "Java For Dummies");
-        values.put(BookEntry.COLUMN_PRICE, 19.99);
-        values.put(BookEntry.COLUMN_QUANTITY, 5);
-        values.put(BookEntry.COLUMN_SUPPLIER, "Barnes and Nobles");
-        values.put(BookEntry.COLUMN_SUPPLIER_PHONE, "8001234567");
+        values.put(BookEntry.COLUMN_PRODUCT_NAME, getString(R.string.restock_book_name));
+        values.put(BookEntry.COLUMN_PRICE, getString(R.string.restock_book_price));
+        values.put(BookEntry.COLUMN_QUANTITY, getString(R.string.restock_book_quantity));
+        values.put(BookEntry.COLUMN_SUPPLIER, getString(R.string.restock_book_supplier));
+        values.put(BookEntry.COLUMN_SUPPLIER_PHONE, getString(R.string.restock_book_phone));
 
-        Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, values);
+        getContentResolver().insert(BookEntry.CONTENT_URI, values);
     }
 
     /**
@@ -125,7 +121,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             case R.id.action_insert_dummy_data:
                 insertBook();
                 return true;
-            // Respond to a click on the "Delect all entries" menu option
+            // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
                 deleteAllBooks();
                 return true;

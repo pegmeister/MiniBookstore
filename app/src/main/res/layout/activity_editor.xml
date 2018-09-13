@@ -17,13 +17,7 @@
             style="@style/CatagoryStyle"
             android:text="@string/product_name" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+        <LinearLayout style="@style/generalStyle">
 
             <EditText
                 android:id="@+id/add_product_name"
@@ -43,13 +37,7 @@
             style="@style/CatagoryStyle"
             android:text="@string/price" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+        <LinearLayout style="@style/generalStyle">
 
             <EditText
                 android:id="@+id/add_price"
@@ -74,32 +62,23 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="horizontal"
-            android:paddingLeft="4dp"
-            android:paddingRight="0dp">
+            android:paddingEnd="0dp"
+            android:paddingStart="4dp">
 
             <Button
                 android:id="@+id/decrement"
-                android:layout_width="56dp"
-                android:layout_height="wrap_content"
-                android:text="@string/minus"
-                android:textSize="24sp"
-                android:textColor="@color/colorAccent"/>
+                style="@style/quantityAdjustStyle"
+                android:text="@string/minus" />
 
             <EditText
                 android:id="@+id/add_quantity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/zero"
-                android:textSize="18sp"
-                android:inputType="number"/>
+                style="@style/quantityEditStyle"
+                android:hint="@string/zero"/>
 
             <Button
                 android:id="@+id/increment"
-                android:layout_width="56dp"
-                android:layout_height="wrap_content"
-                android:text="@string/plus"
-                android:textColor="@color/colorAccent"
-                android:textSize="24sp" />
+                style="@style/quantityAdjustStyle"
+                android:text="@string/plus" />
 
         </LinearLayout>
     </LinearLayout>
@@ -113,13 +92,7 @@
             style="@style/CatagoryStyle"
             android:text="@string/supplier" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+        <LinearLayout style="@style/generalStyle">
 
             <EditText
                 android:id="@+id/add_supplier"
@@ -139,13 +112,7 @@
             style="@style/CatagoryStyle"
             android:text="@string/supplier_phone_number" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+        <LinearLayout style="@style/generalStyle">
 
             <EditText
                 android:id="@+id/add_supplier_phone"
@@ -158,11 +125,7 @@
 
     <Button
         android:id="@+id/contact_supplier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:text="@string/contact_supplier"
-        android:textColor="@color/colorPrimary" />
+        style="@style/contactButtonStyle"
+        android:text="@string/contact_supplier" />
 
 </LinearLayout>

@@ -11,15 +11,21 @@ import android.util.Log;
 
 import com.example.pegmeister.minibookstore.data.BookContract.BookEntry;
 
-public class BookProvider extends ContentProvider{
+public class BookProvider extends ContentProvider {
 
-    /** Tag for the log message */
+    /**
+     * Tag for the log message
+     */
     public static final String LOG_TAG = BookProvider.class.getSimpleName();
 
-    /** URI matcher code for the content URI for the books table */
+    /**
+     * URI matcher code for the content URI for the books table
+     */
     private static final int BOOKS = 100;
 
-    /** URI matcher code for the content URI for a single book in the books table*/
+    /**
+     * URI matcher code for the content URI for a single book in the books table
+     */
     private static final int BOOK_ID = 101;
 
     /**
@@ -39,7 +45,9 @@ public class BookProvider extends ContentProvider{
         sUriMatcher.addURI(BookContract.CONTENT_AUTHORITY, BookContract.PATH_BOOKS + "/#", BOOK_ID);
     }
 
-    /** Database helper object */
+    /**
+     * Database helper object
+     */
     private BookDbHelper mDbHelper;
 
     /**
@@ -56,7 +64,7 @@ public class BookProvider extends ContentProvider{
      * and sort order.
      */
     @Override
-    public Cursor query(Uri uri, String[] projection,  String selection,  String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -65,18 +73,18 @@ public class BookProvider extends ContentProvider{
         // Call UriMatcher.match(Uri) and pass in a Uri, which will return the corresponding integer code
         // (if it matched a valid pattern) or will indicate there is no match.
         int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case BOOKS:
                 cursor = database.query(BookEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case BOOK_ID:
                 selection = BookEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                cursor = database.query(BookEntry.TABLE_NAME,projection,selection,selectionArgs,
-                        null,null, sortOrder);
+                cursor = database.query(BookEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
                 break;
-                default:
-                    throw new IllegalArgumentException("Cannot query unknown URI " + uri);
+            default:
+                throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
 
         // Set notification URI on the Cursor so we now what content URI the Cursor was created for.
@@ -100,40 +108,40 @@ public class BookProvider extends ContentProvider{
         }
     }
 
-    private Uri insertBook(Uri uri, ContentValues values){
+    private Uri insertBook(Uri uri, ContentValues values) {
         // Check that name is not null
         String name = values.getAsString(BookEntry.COLUMN_PRODUCT_NAME);
-        if (name == null){
+        if (name == null) {
             throw new IllegalArgumentException("Product requires a name");
         }
         // Check that the price is valid
         Double price = values.getAsDouble(BookEntry.COLUMN_PRICE);
-        if (price != null && price < 0.00){
+        if (price != null && price < 0.00) {
             throw new IllegalArgumentException("Product requires a valid price");
         }
         // Check that the quantity is valid
         Integer quantity = values.getAsInteger(BookEntry.COLUMN_QUANTITY);
-        if(quantity != null && quantity < 0){
+        if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("Product requires valid quantity");
         }
         // Check that the supplier name is not null
         String supplierName = values.getAsString(BookEntry.COLUMN_SUPPLIER);
-        if (supplierName == null){
+        if (supplierName == null) {
             throw new IllegalArgumentException("Product requires a valid supplier name");
         }
         // Check that the supplier phone number is not null
         String supplierNumber = values.getAsString(BookEntry.COLUMN_SUPPLIER_PHONE);
-        if (supplierNumber == null || supplierNumber.length() < 10){
+        if (supplierNumber == null || supplierNumber.length() < 10) {
             throw new IllegalArgumentException("Product requires a valid 10-digit number");
         }
-        
+
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new book with the given values
-        long id = database.insert(BookEntry.TABLE_NAME,null, values);
+        long id = database.insert(BookEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
-        if (id == -1){
+        if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
@@ -151,17 +159,17 @@ public class BookProvider extends ContentProvider{
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case BOOKS:
                 return updateBook(uri, contentValues, selection, selectionArgs);
-                // For the BOOK_ID code, extract out the ID from the URI, so we know which row to update
-                // selection will be "_=?" and selectionArgs will be a String array containing the actual ID
+            // For the BOOK_ID code, extract out the ID from the URI, so we know which row to update
+            // selection will be "_=?" and selectionArgs will be a String array containing the actual ID
             case BOOK_ID:
                 selection = BookEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateBook(uri, contentValues, selection, selectionArgs);
-                default:
-                    throw new IllegalArgumentException("Update is not supported for " + uri);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
         }
     }
 
@@ -203,7 +211,7 @@ public class BookProvider extends ContentProvider{
 
         if (values.containsKey(BookEntry.COLUMN_SUPPLIER_PHONE)) {
             String supplierNumber = values.getAsString(BookEntry.COLUMN_SUPPLIER_PHONE);
-            if (supplierNumber == null || supplierNumber.length() < 10){
+            if (supplierNumber == null || supplierNumber.length() < 10) {
                 throw new IllegalArgumentException("Product requires a valid 10-digit number");
             }
         }
@@ -217,12 +225,12 @@ public class BookProvider extends ContentProvider{
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(BookEntry.TABLE_NAME,values,selection,selectionArgs);
+        int rowsUpdated = database.update(BookEntry.TABLE_NAME, values, selection, selectionArgs);
 
         // If 1 or more rows were updated, then notify all listeners that the data at the given
         // URI has changed.
-        if (rowsUpdated != 0){
-            getContext().getContentResolver().notifyChange(uri,null);
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
         }
 
         // Returns the number of database rows updated
@@ -241,25 +249,25 @@ public class BookProvider extends ContentProvider{
         int rowsDeleted;
 
         final int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case BOOKS:
                 // Delete all rows that match the selection and selection Args
-                rowsDeleted = database.delete(BookEntry.TABLE_NAME,selection,selectionArgs);
+                rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case BOOK_ID:
                 // Delete a single row given by the ID in the URL
                 selection = BookEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                rowsDeleted = database.delete(BookEntry.TABLE_NAME,selection,selectionArgs);
+                rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-                default:
-                    throw new IllegalArgumentException("Deletion is not support for " + uri);
+            default:
+                throw new IllegalArgumentException("Deletion is not support for " + uri);
         }
 
         // If 1 or more rows were deleted, then notify all listeners that the data at the given
         // URI has deleted.
         if (rowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange(uri,null);
+            getContext().getContentResolver().notifyChange(uri, null);
         }
 
         // Return the number of rows deleted
@@ -269,13 +277,13 @@ public class BookProvider extends ContentProvider{
     @Override
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case BOOKS:
                 return BookEntry.CONTENT_LIST_TYPE;
             case BOOK_ID:
                 return BookEntry.CONTENT_ITEM_TYPE;
-                default:
-                    throw new IllegalArgumentException("Unknown URI " + uri + " with match " + match);
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri + " with match " + match);
         }
     }
 }
