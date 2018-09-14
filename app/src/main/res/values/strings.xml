@@ -30,7 +30,7 @@
     <string name="book_sale_failed">Product is currently unavailable, please restock.</string>
     <string name="book_sale_successful">Sold.</string>
     <string name="empty_view_title_text">I have nothing to read.</string>
-    <string name="empty_view_subtitle_text">Pass me a book now!</string>
+    <string name="empty_view_subtitle_text">Please add or restock inventory.</string>
     <string name="empty_shelf_image">Empty bookshelf</string>
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
     <string name="discard">Discard</string>

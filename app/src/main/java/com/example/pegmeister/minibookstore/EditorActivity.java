@@ -161,31 +161,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String supplierString = supplierEditText.getText().toString().trim();
         String phoneString = supplierPhoneEditText.getText().toString().trim();
 
-        // Check if this is supposed to be a new book entry and check if all fields in the editor are blank
-        /**if (mCurrentBookUri == null &&
-                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
-                TextUtils.isEmpty(supplierString) || TextUtils.isEmpty(phoneString)){
-            Toast.makeText(this,getString(R.string.not_save_msg),
-                    Toast.LENGTH_SHORT).show();
-            if (TextUtils.isEmpty(nameString)){
-                Toast.makeText(this, getString(R.string.enter_name_req),
-                        Toast.LENGTH_SHORT).show();}
-                if (TextUtils.isEmpty(priceString)){
-                    Toast.makeText(this, getString(R.string.enter_price_req),
-                            Toast.LENGTH_SHORT).show();}
-                    if (TextUtils.isEmpty(supplierString)){
-                        Toast.makeText(this,getString(R.string.enter_supplier_req),
-                                Toast.LENGTH_SHORT).show();}
-                        if (TextUtils.isEmpty(phoneString)){
-                            Toast.makeText(this, getString(R.string.enter_phone_req),
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        return;
-                    }*/
-        /**if (mCurrentBookUri == null){
-            Toast.makeText(this,getString(R.string.not_save_msg), Toast.LENGTH_SHORT).show();
-        }*/
             if(TextUtils.isEmpty(nameString)){
             Toast.makeText(this,getString(R.string.enter_name_req), Toast.LENGTH_SHORT).show();
             return;
@@ -391,8 +366,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             supplierEditText.setText(supplier);
             supplierPhoneEditText.setText(supplierPhone);
         }
-
-
     }
 
     @Override

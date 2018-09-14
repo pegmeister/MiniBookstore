@@ -73,7 +73,7 @@
             <EditText
                 android:id="@+id/add_quantity"
                 style="@style/quantityEditStyle"
-                android:hint="@string/zero"/>
+                android:text="@string/zero"/>
 
             <Button
                 android:id="@+id/increment"
