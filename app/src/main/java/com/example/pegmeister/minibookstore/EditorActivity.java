@@ -41,8 +41,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private EditText supplierEditText;
     private EditText supplierPhoneEditText;
 
-    /* Boolean flag that keeps track of whether the book has been edited (true) or not (false) */
+    /** Boolean flag that keeps track of whether the book has been edited (true) or not (false) */
     private boolean bookHasChanged = false;
+
+    /** boolean flag that checks if all required fields are entered or valid. */
+    private boolean requiredFields = false;
 
     String supplierNumber;
     EditText numberText;
@@ -132,11 +135,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         contactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                supplierNumber = numberText.getText().toString();
+                supplierNumber = numberText.getText().toString().trim();
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel: "+ supplierNumber));
+                if (callIntent.resolveActivity(getPackageManager()) != null){
                 startActivity(callIntent);
             }
+        }
         });
 
         // Setup On TouchListener on all the input fields, so we can determine if the user has touched
@@ -152,7 +157,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Get user input from editor and save book into database
      */
-    private void saveBook() {
+    private boolean saveBook() {
         // Read from input field, get all data from the EditText fields
         // use trim to eliminate leading or trailing white space
         String nameString = nameEditText.getText().toString().trim();
@@ -161,31 +166,56 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String supplierString = supplierEditText.getText().toString().trim();
         String phoneString = supplierPhoneEditText.getText().toString().trim();
 
-            if(TextUtils.isEmpty(nameString)){
-            Toast.makeText(this,getString(R.string.enter_name_req), Toast.LENGTH_SHORT).show();
-            return;
-            }
-            if (TextUtils.isEmpty(priceString)){
-            Toast.makeText(this,getString(R.string.enter_price_req), Toast.LENGTH_SHORT).show();
-            return;
-            }
-            if (TextUtils.isEmpty(supplierString)){
-            Toast.makeText(this,getString(R.string.enter_supplier_req), Toast.LENGTH_SHORT).show();
-            return;
-            }
-            if (TextUtils.isEmpty(phoneString)){
-            Toast.makeText(this,getString(R.string.enter_phone_req), Toast.LENGTH_SHORT).show();
-            return;
-            }
-                    
+        // Verify if this is a new book and all required fields are blank.
+        if (mCurrentBookUri == null &&
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString) &&
+                TextUtils.isEmpty(phoneString)) {
+            // Since no fields were modified, we can return early without creating a new book,
+            // No need to create ContentValues and perform any ContentValues operations.
+            return requiredFields;
+        }
+
         // Create a ContentValues object where column names are the keys and product attributes from
         // the editor are the values; then save them in a ContentValues object
         ContentValues values = new ContentValues();
-        values.put(BookEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(BookEntry.COLUMN_PRICE, priceString);
-        values.put(BookEntry.COLUMN_QUANTITY, quantityString);
-        values.put(BookEntry.COLUMN_SUPPLIER, supplierString);
-        values.put(BookEntry.COLUMN_SUPPLIER_PHONE, phoneString);
+
+        // If name field isn't populated by the user, toast will display prompting user to include before leaving the editor.
+        if(TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, getString(R.string.enter_name_req), Toast.LENGTH_SHORT).show();
+            return requiredFields;
+        } else {
+            values.put(BookEntry.COLUMN_PRODUCT_NAME, nameString);
+            }
+
+        // If price field isn't populated by the user, toast will display prompting user to include before leaving the editor.
+            if (TextUtils.isEmpty(priceString)) {
+                Toast.makeText(this, getString(R.string.enter_price_req), Toast.LENGTH_SHORT).show();
+                return requiredFields;
+            } else {
+                values.put(BookEntry.COLUMN_PRICE, priceString);
+            }
+
+            // If supplier name isn't populated by the user, toast will display prompting user to include before leaving the editor.
+            if (TextUtils.isEmpty(supplierString)) {
+                Toast.makeText(this, getString(R.string.enter_supplier_req), Toast.LENGTH_SHORT).show();
+                return requiredFields;
+            } else {
+                values.put(BookEntry.COLUMN_SUPPLIER, supplierString);
+            }
+
+        // If supplier phone number isn't populated by the user, toast will display prompting user to include
+        // and must be a valid 10-digit number format.
+            if (TextUtils.isEmpty(phoneString) || phoneString.length() < 10) {
+                Toast.makeText(this, getString(R.string.enter_phone_req), Toast.LENGTH_SHORT).show();
+                return requiredFields;
+            } else {
+                values.put(BookEntry.COLUMN_SUPPLIER_PHONE, phoneString);
+            }
+
+        // Create a ContentValues object where column names are the keys and product attributes from
+        // the editor are the values; then save them in a ContentValues object
+            values.put(BookEntry.COLUMN_QUANTITY, quantityString);
 
         // Determine if this is a new or existing book by checking if mCurrentBookUri is null or not.
         if (mCurrentBookUri == null) {
@@ -212,7 +242,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0){
-                // If no rows were affecteed, then there was an error with the update
+                // If no rows were affected, then there was an error with the update
                 Toast.makeText(this, getString(R.string.editor_update_book_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
@@ -221,6 +251,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         }
+        requiredFields = true;
+        return requiredFields;
     }
 
     @Override
@@ -254,8 +286,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_save:
                 // save product to database, trigger when the Save button is pressed
                 saveBook();
+                if (requiredFields == true){
                 //Exit activity
-                finish();
+                finish();}
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:

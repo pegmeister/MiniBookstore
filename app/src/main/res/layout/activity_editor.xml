@@ -117,7 +117,7 @@
             <EditText
                 android:id="@+id/add_supplier_phone"
                 style="@style/EditorFieldStyle"
-                android:hint="@string/supplier_phone_number"
+                android:hint="@string/supplier_phone_hint"
                 android:inputType="phone" />
 
         </LinearLayout>
