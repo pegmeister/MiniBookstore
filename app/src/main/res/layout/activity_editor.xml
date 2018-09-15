@@ -23,7 +23,8 @@
                 android:id="@+id/add_product_name"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/product_name"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLength="20"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -43,7 +44,8 @@
                 android:id="@+id/add_price"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/price"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLength="5"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -73,7 +75,8 @@
             <EditText
                 android:id="@+id/add_quantity"
                 style="@style/quantityEditStyle"
-                android:text="@string/zero"/>
+                android:text="@string/zero"
+                android:maxLength="4"/>
 
             <Button
                 android:id="@+id/increment"
@@ -98,7 +101,8 @@
                 android:id="@+id/add_supplier"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/supplier"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLength="20"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -118,7 +122,8 @@
                 android:id="@+id/add_supplier_phone"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/supplier_phone_hint"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:maxLength="12"/>
 
         </LinearLayout>
     </LinearLayout>
